@@ -65,6 +65,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BVH.cpp" />
+    <ClCompile Include="BVHNode.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RandomGenerator.cpp" />
     <ClCompile Include="Ray.cpp" />
@@ -74,6 +75,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BVH.h" />
+    <ClInclude Include="BVHNode.h" />
+    <ClInclude Include="IntersectionInfo.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="RandomGenerator.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Scene.h" />

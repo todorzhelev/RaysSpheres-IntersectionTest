@@ -1,12 +1,13 @@
 #pragma once
 #include<math.h>
 #include<iostream>
+#include<xmmintrin.h>
 
 struct Vector3D
 {
 	Vector3D();
 
-	Vector3D(float _x, float _y, float _z);
+	Vector3D(float _x, float _y, float _z, float _w = 0.0);
 
 	Vector3D operator-(const Vector3D& other) const;
 
@@ -27,7 +28,15 @@ struct Vector3D
 	friend std::ostream& operator<<(std::ostream& stream, const Vector3D& vec);
 	friend Vector3D operator*(float scalar, const Vector3D& vec);
 
-	float x, y, z;
+	//explicitly align at 16 bytes. If we work with unaligned data
+
+	union __declspec(align(16))
+	{
+		__m128 m_reg128;
+		float values[4];
+	};
+
+	//float x, y, z;
 };
 
 float DotProduct(const Vector3D& vec1, const Vector3D& vec2);

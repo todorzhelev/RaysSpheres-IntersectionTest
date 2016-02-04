@@ -1,11 +1,11 @@
 #pragma once
 #include "Vector3D.h"
 
-class Ray
+struct Ray
 {
-public:
+	Ray();
 
-	Ray(Vector3D startPos, Vector3D direction);
+	Ray(const Vector3D& startPos, const Vector3D& direction);
 
 	Vector3D m_startPos;
 	Vector3D m_direction;

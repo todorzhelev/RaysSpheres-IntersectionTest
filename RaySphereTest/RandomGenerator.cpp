@@ -10,7 +10,6 @@ RandomGenerator::RandomGenerator()
 	m_randEngine.seed(seed_val);
 }
 
-
 Vector3D RandomGenerator::GetRandomPosition(float min, float max)
 {
 	std::uniform_real_distribution < float > distr(min, max);

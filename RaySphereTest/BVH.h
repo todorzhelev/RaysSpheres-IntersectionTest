@@ -1,10 +1,13 @@
 #pragma once
-#include "Sphere.h"
+#include<vector>
+#include "BVHNode.h"
 
 class BVH
 {
-public:
-	static Sphere GetBoundingSphere( Sphere s0, Sphere s1);
+	void Build(const std::vector<Sphere*>& spheres);
 
+	void BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth);
+
+	int CalculateSplitIndex();
 
 };

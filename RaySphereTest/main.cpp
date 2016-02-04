@@ -1,15 +1,12 @@
 #include "Scene.h"
 
+//if we dont pass Vector3D by const reference we will get "formal parameter with requested alignment of 16 won't be aligned"
+//m128 should be pointer and we should align it. Otherwise it will crash
 int main()
 {
 	Scene scene;
 	scene.GenerateObjects();
 	scene.CheckForIntersections();
-
-	Sphere sphere(Vector3D(0, 0, 0), 1);
-	Sphere sphere1(Vector3D(2, 2, 0), 1);
-
-	Sphere res = BVH::GetBoundingSphere(sphere, sphere1);
 
 	system("pause");
 }

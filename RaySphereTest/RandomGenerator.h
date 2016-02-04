@@ -28,8 +28,7 @@ private:
 	std::mt19937 m_randEngine;
 };
 
-inline
-RandomGenerator* GetRG()
+inline RandomGenerator* GetRG()
 {
 	return RandomGenerator::GetRandomGenerator();
 }
