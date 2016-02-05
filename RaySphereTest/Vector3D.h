@@ -19,17 +19,15 @@ struct Vector3D
 
 	Vector3D operator/(float scalar) const;
 
-	float Length() const;
-
-	Vector3D Normalize() const;
-
-	float Distance(const Vector3D& vec) const;
+	//not needed for now
+	//float Length() const;
+	//Vector3D Normalize() const;
+	//float Distance(const Vector3D& vec) const;
 
 	friend std::ostream& operator<<(std::ostream& stream, const Vector3D& vec);
 	friend Vector3D operator*(float scalar, const Vector3D& vec);
 
-	//explicitly align at 16 bytes. If we work with unaligned data
-
+	//explicitly align at 16 bytes.
 	union __declspec(align(16))
 	{
 		__m128 m_reg128;
