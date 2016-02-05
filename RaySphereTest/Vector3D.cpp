@@ -95,7 +95,7 @@ float DotProduct(const Vector3D& vec1, const Vector3D& vec2)
 
 std::ostream& operator<<(std::ostream& stream, const Vector3D& vec)
 {
-	stream << "(" << vec.m_reg128.m128_f32[1] << "," << vec.m_reg128.m128_f32[2] << "," << vec.m_reg128.m128_f32[3] << ")";
+	stream << "(" << (int)vec.m_reg128.m128_f32[1] << "," << (int)vec.m_reg128.m128_f32[2] << "," << (int)vec.m_reg128.m128_f32[3] << ")";
 
 	return stream;
 }
