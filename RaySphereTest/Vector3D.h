@@ -19,9 +19,11 @@ struct Vector3D
 
 	Vector3D operator/(float scalar) const;
 
+	float Length() const;
+
+	void Normalize();
+
 	//not needed for now
-	//float Length() const;
-	//Vector3D Normalize() const;
 	//float Distance(const Vector3D& vec) const;
 
 	friend std::ostream& operator<<(std::ostream& stream, const Vector3D& vec);

@@ -10,7 +10,7 @@ class Scene
 public:
 
 	void GenerateObjects();
-	void CheckForIntersections();
+	void CheckForIntersections(bool bWithAllSpheres);
 
 private:
 

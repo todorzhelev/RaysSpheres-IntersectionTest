@@ -95,34 +95,37 @@ float DotProduct(const Vector3D& vec1, const Vector3D& vec2)
 
 std::ostream& operator<<(std::ostream& stream, const Vector3D& vec)
 {
-	stream << "(" << (int)vec.m_reg128.m128_f32[1] << "," << (int)vec.m_reg128.m128_f32[2] << "," << (int)vec.m_reg128.m128_f32[3] << ")";
+	stream.precision(3);
+	stream << "(" << vec.m_reg128.m128_f32[1] << "," << vec.m_reg128.m128_f32[2] << "," << vec.m_reg128.m128_f32[3] << ")";
 
 	return stream;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//float Vector3D::Length() const
-//{
-//	//this should be also checked
-//	const int mask = 0x55;
-//
-//	__m128 res = _mm_dp_ps(m_reg128, m_reg128, mask);
-//	res = _mm_sqrt_ps(res);
-//	return res.m128_f32[0];
-//}
+float Vector3D::Length() const
+{
+	float length;
+	__m128 temp = _mm_mul_ps(m_reg128, m_reg128);
+
+	__m128 r2 = _mm_hadd_ps(temp, temp);
+	__m128 r3 = _mm_hadd_ps(r2, r2);
+
+	r3 = _mm_sqrt_ps(r3);
+
+	_mm_store_ss(&length, r3);
+
+	return length;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-//Vector3D Vector3D::Normalize() const
-//{
-//	Vector3D temp;
-//	float length = Length();
-//
-//	temp.m_reg128 = _mm_div_ps(m_reg128, _mm_set_ps(length, length, length, length));
-//
-//	return temp;
-//}
+void Vector3D::Normalize()
+{
+	float length = Length();
+
+	m_reg128 = _mm_div_ps(m_reg128, _mm_set_ps(length, length, length, length));
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 

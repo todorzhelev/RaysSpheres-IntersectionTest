@@ -13,6 +13,7 @@ Ray::Ray()
 Ray::Ray(const Vector3D& startPos, const Vector3D& direction):
 m_startPos(startPos), m_direction(direction)
 {
+	m_direction.Normalize();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

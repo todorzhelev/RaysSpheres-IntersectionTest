@@ -5,24 +5,24 @@
 
 void Scene::GenerateObjects()
 {
-	m_numberOfRays = GetRG()->GetRandomInt(0, 3);
-	m_numberOfSpheres = GetRG()->GetRandomInt(0, 2000);
+	m_numberOfRays = GetRG()->GetRandomInt(0, 300);
+	m_numberOfSpheres = GetRG()->GetRandomInt(0, 20000);
 
 	m_rays = new Ray[m_numberOfRays];
 	m_spheres= new Sphere[m_numberOfSpheres];
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
-		Vector3D pos = GetRG()->GetRandomPosition(0, 10000);
-		Vector3D dir = GetRG()->GetRandomPosition(0, 10000);
+		Vector3D pos = GetRG()->GetRandomPosition(0, 100);
+		Vector3D dir = GetRG()->GetRandomPosition(0, 100);
 
 		m_rays[i] = Ray(pos, dir);
 	}
 
 	for (int i = 0; i < m_numberOfSpheres; i++)
 	{
-		Vector3D pos = GetRG()->GetRandomPosition(0, 100000);
-		float radius = GetRG()->GetRandomFloat(0, 1);
+		Vector3D pos = GetRG()->GetRandomPosition(0, 100);
+		float radius = GetRG()->GetRandomFloat(0, 2);
 
 		m_spheres[i] = Sphere(pos, radius);
 	}
@@ -30,7 +30,7 @@ void Scene::GenerateObjects()
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void Scene::CheckForIntersections()
+void Scene::CheckForIntersections(bool bWithAllSpheres)
 {
 	std::ofstream stream;
 	stream.open("log.txt");
@@ -38,6 +38,14 @@ void Scene::CheckForIntersections()
 	int intersectionsAmount = 0;
 
 	stream << "Total rays: " << m_numberOfRays << " Total spheres: " << m_numberOfSpheres << std::endl;
+
+	//test
+	//Ray r(Vector3D(0, 0, 0), Vector3D(1, 1, 0));
+	//Sphere s(Vector3D(10, 8, 0), 2);
+
+	//IntersectionInfo info1;
+
+	//s.GetIntersection(r, info1);
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
@@ -51,11 +59,15 @@ void Scene::CheckForIntersections()
 
 			if (intersect)
 			{
-				stream << intersectionsAmount << ": Ray " << i << " start: " << m_rays[i].m_startPos << " dir: " << m_rays[i].m_direction;
-				stream << "Sphere " << j << " c: " << m_spheres[j].m_center << " rad: " << m_spheres[j].m_radius;
-				stream << " Inters. point: " << info.m_intersPoint << std::endl;
-
+				stream << intersectionsAmount << ": Ray " << i << " start:" << m_rays[i].m_startPos << " dir:" << m_rays[i].m_direction;
+				stream << "Sphere " << j << " c:" << m_spheres[j].m_center << " rad:" << m_spheres[j].m_radius;
+				stream << " Inters. point:" << info.m_intersPoint << std::endl;
+				
 				intersectionsAmount++;
+				if(!bWithAllSpheres)
+				{
+					break;
+				}
 			}
 		}
 	}
