@@ -14,7 +14,7 @@ void Scene::GenerateObjects()
 {
 	m_timer->Start();
 
-	m_numberOfRays = GetRG()->GetRandomInt(10000, 30000);
+	m_numberOfRays = GetRG()->GetRandomInt(10000, 20000);
 	m_numberOfSpheres = GetRG()->GetRandomInt(1000, 4000);
 
 	m_rays = new Ray[m_numberOfRays];
