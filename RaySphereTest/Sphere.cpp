@@ -50,10 +50,10 @@ void Sphere::Expand(Sphere& sphere)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-bool Sphere::GetIntersection(Ray& ray, IntersectionInfo& info)
+bool Sphere::GetIntersection(Ray* ray, IntersectionInfo& info)
 {
-	Vector3D m = ray.m_startPos - m_center;
-	float b = DotProduct(m, ray.m_direction);
+	Vector3D m = ray->m_startPos - m_center;
+	float b = DotProduct(m, ray->m_direction);
 	float c = DotProduct(m, m) - m_radius * m_radius;
 
 	// Exit if r’s origin outside s (c > 0) and r pointing away from s (b > 0)
@@ -75,7 +75,7 @@ bool Sphere::GetIntersection(Ray& ray, IntersectionInfo& info)
 
 	// If t is negative, ray started inside sphere so clamp t to zero
 	if (t < 0.0f) t = 0.0f;
-	info.m_intersPoint = ray.m_startPos + t * ray.m_direction;
+	info.m_intersPoint = ray->m_startPos + t * ray->m_direction;
 	info.m_t = t;
 	info.m_object = this;
 

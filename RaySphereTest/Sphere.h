@@ -9,7 +9,7 @@ struct Sphere : public Object
 	Sphere(const Vector3D& center, float radius);
 	void Expand(Sphere& sphere);
 
-	virtual bool GetIntersection(Ray& ray, IntersectionInfo& info) override;
+	virtual bool GetIntersection(Ray* ray, IntersectionInfo& info) override;
 
 	//virtual Sphere GetBoundingSphere() override;
 

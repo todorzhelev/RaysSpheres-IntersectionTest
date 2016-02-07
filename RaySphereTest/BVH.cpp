@@ -16,14 +16,16 @@ void BVH::Build()
 {
 	m_rootNode = new BVHNode;
 
-	m_objects.push_back(&m_scene->m_spheres[0]);
-	m_rootNode->m_boundingSphere = m_scene->m_spheres[0];
+	m_objects.resize(m_scene->m_numberOfSpheres);
+
+	m_objects[0] = &m_scene->m_spheres[0];
+	m_rootNode->m_boundingSphere.m_radius = m_scene->m_spheres[0].m_radius;
+	m_rootNode->m_boundingSphere.m_center = m_scene->m_spheres[0].m_center;
 
 	for (int i = 1; i < m_scene->m_numberOfSpheres; i++)
 	{
 		Sphere* sphere = &m_scene->m_spheres[i];
-
-		m_objects.push_back(sphere);
+		m_objects[i] = sphere;
 
 		m_rootNode->m_boundingSphere.Expand(*sphere);
 	}
@@ -39,8 +41,7 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 
 	if (amountOfObjects <= BVH::maxObjectsInLeaf)
 	{
-		node->m_bIsLeaf = true;
-		return;
+		node->MakeLeaf(leftIndex, amountOfObjects);
 	}
 	else
 	{
@@ -56,13 +57,13 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 		//we cannot split the objects anymore, group them as one
 		if( splitIndex == rightIndex )
 		{
-			node->m_bIsLeaf = true;
+			node->MakeLeaf(leftIndex, amountOfObjects);
 			return;
 		}
 
 		if (splitIndex == leftIndex)
 		{
-			node->m_bIsLeaf = true;
+			node->MakeLeaf(leftIndex, amountOfObjects);
 			return;
 		}
 
@@ -82,8 +83,11 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 			rightNodeBoundingSphere.Expand(*m_objects[i]);
 		}
 
-		node->m_leftNode->m_boundingSphere  = leftNodeBoundingSphere;
-		node->m_rightNode->m_boundingSphere = rightNodeBoundingSphere;
+		node->m_leftNode->m_boundingSphere.m_radius  = leftNodeBoundingSphere.m_radius;
+		node->m_leftNode->m_boundingSphere.m_center = leftNodeBoundingSphere.m_center;
+
+		node->m_rightNode->m_boundingSphere.m_radius = rightNodeBoundingSphere.m_radius;
+		node->m_rightNode->m_boundingSphere.m_center = rightNodeBoundingSphere.m_center;
 
 		node->m_bIsLeaf = false;
 		//node->m_amountOfObjects = amountOfObjects;

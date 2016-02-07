@@ -5,6 +5,5 @@
 
 struct Object
 {
-	virtual bool GetIntersection(Ray& ray, IntersectionInfo& info) = 0;
-	//virtual Sphere GetBoundingSphere() = 0;
+	virtual bool GetIntersection(Ray* ray, IntersectionInfo& info) = 0;
 };
