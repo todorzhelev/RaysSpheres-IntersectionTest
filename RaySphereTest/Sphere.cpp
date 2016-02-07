@@ -21,8 +21,31 @@ m_center(center), m_radius(radius)
 
 void Sphere::Expand(Sphere& sphere)
 {
+	Vector3D centerDiff = sphere.m_center - m_center;
+	float radiusDiff = sphere.m_radius - m_radius;
+	float radiusDiffSqr = radiusDiff * radiusDiff;
+	float Lsqr = centerDiff.LengthSqr();
 
+	//if one of the spheres is inside the other
+	if( radiusDiffSqr >= Lsqr)
+	{
+		//if the current sphere is inside the other, we have to expand it
+		if( radiusDiff >= 0.0f )
+		{
+			m_center = sphere.m_center;
+			m_radius = sphere.m_radius;
+		}
+	}
+	else
+	{
+		float L = sqrt(Lsqr);
+		float t = (L + sphere.m_radius - m_radius) / (2 * L);
+		Vector3D newCenter = m_center + t*centerDiff;
+		float newRadius = (L + sphere.m_radius + m_radius) / 2;
 
+		m_center = newCenter;
+		m_radius = newRadius;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////

@@ -1,7 +1,8 @@
 #pragma once
 #include<vector>
 #include "BVHNode.h"
-#include "Scene.h"
+
+class Scene;
 
 class BVH
 {
@@ -15,7 +16,7 @@ public:
 
 	int BVH::CalculateSplitIndex(int leftIndex, int rightIndex);
 
-	static const int maxObjectsInLeaf = 2;
+	static const int maxObjectsInLeaf = 4;
 
 private:
 

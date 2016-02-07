@@ -21,6 +21,8 @@ struct Vector3D
 
 	float Length() const;
 
+	float LengthSqr() const;
+
 	void Normalize();
 
 	//not needed for now

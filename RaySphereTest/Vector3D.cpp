@@ -103,6 +103,20 @@ std::ostream& operator<<(std::ostream& stream, const Vector3D& vec)
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+float Vector3D::LengthSqr() const
+{
+	float length;
+	__m128 temp = _mm_mul_ps(m_reg128, m_reg128);
+
+	__m128 r2 = _mm_hadd_ps(temp, temp);
+	__m128 r3 = _mm_hadd_ps(r2, r2);
+
+	_mm_store_ss(&length, r3);
+
+	return length;
+
+}
+
 float Vector3D::Length() const
 {
 	float length;

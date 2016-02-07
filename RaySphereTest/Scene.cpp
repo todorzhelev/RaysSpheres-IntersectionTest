@@ -30,7 +30,7 @@ void Scene::GenerateObjects()
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void Scene::CheckForIntersections(bool bWithAllSpheres)
+void Scene::CheckForIntersections(bool bWithAllSpheres, BVH& bvh)
 {
 	std::ofstream stream;
 	stream.open("log.txt");
@@ -49,7 +49,8 @@ void Scene::CheckForIntersections(bool bWithAllSpheres)
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
-		for (int j = 0; j < m_numberOfSpheres; j++)
+
+		/*for (int j = 0; j < m_numberOfSpheres; j++)
 		{
 			Vector3D resultPoint(0, 0, 0);
 
@@ -69,7 +70,7 @@ void Scene::CheckForIntersections(bool bWithAllSpheres)
 					break;
 				}
 			}
-		}
+		}*/
 	}
 
 	stream.close();

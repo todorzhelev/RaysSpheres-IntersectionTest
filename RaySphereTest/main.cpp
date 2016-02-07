@@ -19,7 +19,7 @@ int main()
 
 	BVH bvh(&scene);
 
-	scene.CheckForIntersections((bool) choice);
+	scene.CheckForIntersections((bool) choice, bvh);
 
 	system("pause");
 }
