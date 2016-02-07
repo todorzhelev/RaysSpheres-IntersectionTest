@@ -11,7 +11,7 @@ class Scene
 public:
 
 	void GenerateObjects();
-	void CheckForIntersections(bool bWithAllSpheres, BVH* bvh);
+	void CheckForIntersections(BVH* bvh);
 	bool RayBVHTest(Ray* ray, BVH* bvh, BVHNode* node, std::vector<IntersectionInfo>& info);
 	int m_numberOfRays;
 	int m_numberOfSpheres;

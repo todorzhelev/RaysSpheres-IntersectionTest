@@ -30,7 +30,7 @@ void Scene::GenerateObjects()
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-void Scene::CheckForIntersections(bool bWithAllSpheres, BVH* bvh)
+void Scene::CheckForIntersections(BVH* bvh)
 {
 	std::ofstream stream;
 	stream.open("logRegular.txt");
@@ -84,10 +84,6 @@ void Scene::CheckForIntersections(bool bWithAllSpheres, BVH* bvh)
 				stream << " Inters. point:" << info.m_intersPoint << std::endl;
 				
 				intersectionsAmount++;
-				/*if(!bWithAllSpheres)
-				{
-					break;
-				}*/
 			}
 		}
 	}
@@ -101,9 +97,11 @@ bool Scene::RayBVHTest(Ray* ray, BVH* bvh, BVHNode* node, std::vector<Intersecti
 {
 	if( node )
 	{
+		bool isLeaf = false;
+		bool bAnyIntersects = false;
 		if (node->m_bIsLeaf)
 		{
-			bool bAnyIntersects = false;
+			isLeaf = true;
 			for (int i = node->m_index; i < node->m_index + node->m_amountOfObjectsInNode; i++)
 			{
 				IntersectionInfo info;
@@ -122,22 +120,24 @@ bool Scene::RayBVHTest(Ray* ray, BVH* bvh, BVHNode* node, std::vector<Intersecti
 				return true;
 			}
 		}
-		else
+
+		if(!isLeaf)
 		{
 			IntersectionInfo info;
 
 			bool bIntersect = node->m_boundingSphere.GetIntersection(ray, info);
+			bool bIntersectsFromLeftTree = false, bIntersectsFromRightTree = false;
 
 			if (bIntersect)
 			{
 				//left node
-				RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex], intersectInfo);
+				bIntersectsFromLeftTree = RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex], intersectInfo);
 
 				//right node
-				RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex + 1], intersectInfo);
+				bIntersectsFromRightTree = RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex + 1], intersectInfo);
 			}
 
-			return false;
+			return bIntersectsFromLeftTree || bIntersectsFromRightTree;
 		}
 	}
 	
