@@ -9,7 +9,10 @@
 
 int main()
 {
-	Scene scene;
+	Timer timer;
+
+	Scene scene(&timer);
+
 	scene.GenerateObjects();
 
 	BVH bvh(&scene);

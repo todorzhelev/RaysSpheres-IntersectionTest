@@ -3,17 +3,26 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
+Scene::Scene(Timer* timer)
+{
+	m_timer = timer;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
 void Scene::GenerateObjects()
 {
-	m_numberOfRays = GetRG()->GetRandomInt(0, 300);
-	m_numberOfSpheres = GetRG()->GetRandomInt(0, 20000);
+	m_timer->Start();
+
+	m_numberOfRays = GetRG()->GetRandomInt(10000, 30000);
+	m_numberOfSpheres = GetRG()->GetRandomInt(1000, 4000);
 
 	m_rays = new Ray[m_numberOfRays];
 	m_spheres= new Sphere[m_numberOfSpheres];
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
-		Vector3D pos = GetRG()->GetRandomPosition(0, 100);
+		Vector3D pos = GetRG()->GetRandomPosition(0, 10000);
 		Vector3D dir = GetRG()->GetRandomPosition(0, 100);
 
 		m_rays[i] = Ray(pos, dir);
@@ -21,11 +30,15 @@ void Scene::GenerateObjects()
 
 	for (int i = 0; i < m_numberOfSpheres; i++)
 	{
-		Vector3D pos = GetRG()->GetRandomPosition(0, 100);
-		float radius = GetRG()->GetRandomFloat(0, 2);
+		Vector3D pos = GetRG()->GetRandomPosition(0, 10000);
+		float radius = GetRG()->GetRandomFloat(0, 10);
 
 		m_spheres[i] = Sphere(pos, radius);
 	}
+
+	auto elapsed = m_timer->Stop();
+
+	std::cout << "Objects generation: " << elapsed.count() << " milliseconds" << std::endl;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,13 +55,8 @@ void Scene::CheckForIntersections(BVH* bvh)
 
 	stream << "Total rays: " << m_numberOfRays << " Total spheres: " << m_numberOfSpheres << std::endl;
 	stream1 << "Total rays: " << m_numberOfRays << " Total spheres: " << m_numberOfSpheres << std::endl;
-	//test
-	//Ray r(Vector3D(0, 0, 0), Vector3D(1, 1, 0));
-	//Sphere s(Vector3D(10, 8, 0), 2);
 
-	//IntersectionInfo info1;
-
-	//s.GetIntersection(r, info1);
+	m_timer->Start();
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
@@ -61,11 +69,17 @@ void Scene::CheckForIntersections(BVH* bvh)
 			for (auto& it : intersInfo)
 			{
 				stream1 << intersectionsAmount << ": Ray " << i << " start:" << m_rays[i].m_startPos << " dir:" << m_rays[i].m_direction;
-				stream << "Sphere " << " c:" << it.m_object->m_center << " rad:" << it.m_object->m_radius;
+				stream1 << "Sphere " << " c:" << it.m_object->m_center << " rad:" << it.m_object->m_radius;
 				stream1 << " Inters. point:" << it.m_intersPoint << std::endl;
 			}
 		}
 	}
+
+	auto elapsed = m_timer->Stop();
+
+	std::cout << "Intersection test with BVH: " << elapsed.count() << " milliseconds" << std::endl;
+
+	m_timer->Start();
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
@@ -88,7 +102,12 @@ void Scene::CheckForIntersections(BVH* bvh)
 		}
 	}
 
+	elapsed = m_timer->Stop();
+
+	std::cout << "Intersection test with O(M.N) complexity: " << elapsed.count() << " milliseconds" << std::endl;
+
 	stream.close();
+	stream1.close();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,9 +154,13 @@ bool Scene::RayBVHTest(Ray* ray, BVH* bvh, BVHNode* node, std::vector<Intersecti
 
 				//right node
 				bIntersectsFromRightTree = RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex + 1], intersectInfo);
-			}
 
-			return bIntersectsFromLeftTree || bIntersectsFromRightTree;
+				return bIntersectsFromLeftTree || bIntersectsFromRightTree;
+			}
+			else
+			{
+				return false;
+			}
 		}
 	}
 	
