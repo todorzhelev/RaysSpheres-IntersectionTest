@@ -3,7 +3,7 @@
 #include "Scene.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-int dimensionSplit = 2; //1 - x, 2 - y, 3 - z
+int dimensionSplit = 1; //1 - x, 2 - y, 3 - z
 
 BVH::BVH(Scene* scene)
 {

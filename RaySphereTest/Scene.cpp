@@ -60,6 +60,33 @@ void Scene::CheckForIntersections(BVH* bvh)
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
+		for (int j = 0; j < m_numberOfSpheres; j++)
+		{
+			Vector3D resultPoint(0, 0, 0);
+
+			IntersectionInfo info;
+
+			bool intersect = m_spheres[j].GetIntersection(&m_rays[i], info);
+
+			if (intersect)
+			{
+				stream << intersectionsAmount << ": Ray " << i << " start:" << m_rays[i].m_startPos << " dir:" << m_rays[i].m_direction;
+				stream << "Sphere " << j << " c:" << m_spheres[j].m_center << " rad:" << m_spheres[j].m_radius;
+				stream << " Inters. point:" << info.m_intersPoint << std::endl;
+
+				intersectionsAmount++;
+			}
+		}
+	}
+
+	auto elapsed = m_timer->Stop();
+
+	std::cout << "Intersection test with O(M.N) complexity: " << elapsed.count() << " milliseconds" << std::endl;
+
+	m_timer->Start();
+
+	for (int i = 0; i < m_numberOfRays; i++)
+	{
 		std::vector<IntersectionInfo> intersInfo;
 		BVHNode* rootNode = &bvh->m_nodes[0];
 		bool bIntersect = RayBVHTest(&m_rays[i], bvh, rootNode, intersInfo);
@@ -75,36 +102,8 @@ void Scene::CheckForIntersections(BVH* bvh)
 		}
 	}
 
-	auto elapsed = m_timer->Stop();
-
-	std::cout << "Intersection test with BVH: " << elapsed.count() << " milliseconds" << std::endl;
-
-	m_timer->Start();
-
-	for (int i = 0; i < m_numberOfRays; i++)
-	{
-		for (int j = 0; j < m_numberOfSpheres; j++)
-		{
-			Vector3D resultPoint(0, 0, 0);
-
-			IntersectionInfo info;
-			
-			bool intersect = m_spheres[j].GetIntersection(&m_rays[i], info);
-
-			if (intersect)
-			{
-				stream << intersectionsAmount << ": Ray " << i << " start:" << m_rays[i].m_startPos << " dir:" << m_rays[i].m_direction;
-				stream << "Sphere " << j << " c:" << m_spheres[j].m_center << " rad:" << m_spheres[j].m_radius;
-				stream << " Inters. point:" << info.m_intersPoint << std::endl;
-				
-				intersectionsAmount++;
-			}
-		}
-	}
-
 	elapsed = m_timer->Stop();
-
-	std::cout << "Intersection test with O(M.N) complexity: " << elapsed.count() << " milliseconds" << std::endl;
+	std::cout << "Intersection test with BVH: " << elapsed.count() << " milliseconds" << std::endl;
 
 	stream.close();
 	stream1.close();
