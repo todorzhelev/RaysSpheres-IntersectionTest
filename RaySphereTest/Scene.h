@@ -12,7 +12,7 @@ public:
 
 	void GenerateObjects();
 	void CheckForIntersections(bool bWithAllSpheres, BVH& bvh);
-
+	bool RayBVHTest(Ray& ray, BVHNode* node, IntersectionInfo& info);
 	int m_numberOfRays;
 	int m_numberOfSpheres;
 	Ray* m_rays;

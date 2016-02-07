@@ -33,12 +33,15 @@ void Scene::GenerateObjects()
 void Scene::CheckForIntersections(bool bWithAllSpheres, BVH& bvh)
 {
 	std::ofstream stream;
-	stream.open("log.txt");
+	stream.open("logRegular.txt");
+
+	std::ofstream stream1;
+	stream1.open("logBVH.txt");
 
 	int intersectionsAmount = 0;
 
 	stream << "Total rays: " << m_numberOfRays << " Total spheres: " << m_numberOfSpheres << std::endl;
-
+	stream1 << "Total rays: " << m_numberOfRays << " Total spheres: " << m_numberOfSpheres << std::endl;
 	//test
 	//Ray r(Vector3D(0, 0, 0), Vector3D(1, 1, 0));
 	//Sphere s(Vector3D(10, 8, 0), 2);
@@ -49,8 +52,7 @@ void Scene::CheckForIntersections(bool bWithAllSpheres, BVH& bvh)
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
-
-		/*for (int j = 0; j < m_numberOfSpheres; j++)
+		for (int j = 0; j < m_numberOfSpheres; j++)
 		{
 			Vector3D resultPoint(0, 0, 0);
 
@@ -65,15 +67,46 @@ void Scene::CheckForIntersections(bool bWithAllSpheres, BVH& bvh)
 				stream << " Inters. point:" << info.m_intersPoint << std::endl;
 				
 				intersectionsAmount++;
-				if(!bWithAllSpheres)
+				/*if(!bWithAllSpheres)
 				{
 					break;
-				}
+				}*/
 			}
-		}*/
+		}
+
+		Ray ray = m_rays[i];
+		IntersectionInfo info;
+		bool bIntersect = RayBVHTest(ray, bvh.m_rootNode, info);
+
+		if (bIntersect)
+		{
+			stream1 << intersectionsAmount << ": Ray " << i << " start:" << m_rays[i].m_startPos << " dir:" << m_rays[i].m_direction;
+			//stream << "Sphere " << j << " c:" << m_spheres[j].m_center << " rad:" << m_spheres[j].m_radius;
+			stream1 << " Inters. point:" << info.m_intersPoint << std::endl;
+		}
 	}
 
 	stream.close();
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+//TODO : fix this.
+bool Scene::RayBVHTest(Ray& ray, BVHNode* node, IntersectionInfo& info)
+{
+	if( node )
+	{
+		bool bIntersect = node->m_boundingSphere.GetIntersection(ray, info);
+		if (bIntersect)
+		{
+			return true;
+		}
+
+		RayBVHTest(ray, node->m_leftNode, info);
+		RayBVHTest(ray, node->m_rightNode, info);
+
+		return false;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
