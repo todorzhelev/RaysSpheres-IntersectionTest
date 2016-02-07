@@ -53,7 +53,8 @@ void Scene::CheckForIntersections(bool bWithAllSpheres, BVH* bvh)
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
 		std::vector<IntersectionInfo> intersInfo;
-		bool bIntersect = RayBVHTest(&m_rays[i], bvh, bvh->m_rootNode, intersInfo);
+		BVHNode* rootNode = &bvh->m_nodes[0];
+		bool bIntersect = RayBVHTest(&m_rays[i], bvh, rootNode, intersInfo);
 
 		if (bIntersect)
 		{
@@ -121,18 +122,23 @@ bool Scene::RayBVHTest(Ray* ray, BVH* bvh, BVHNode* node, std::vector<Intersecti
 				return true;
 			}
 		}
-
-		IntersectionInfo info;
-
-		bool bIntersect = node->m_boundingSphere.GetIntersection(ray, info);
-
-		if (bIntersect)
+		else
 		{
-			RayBVHTest(ray, bvh, node->m_leftNode, intersectInfo);
-			RayBVHTest(ray, bvh, node->m_rightNode, intersectInfo);
-		}
+			IntersectionInfo info;
 
-		return false;
+			bool bIntersect = node->m_boundingSphere.GetIntersection(ray, info);
+
+			if (bIntersect)
+			{
+				//left node
+				RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex], intersectInfo);
+
+				//right node
+				RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex + 1], intersectInfo);
+			}
+
+			return false;
+		}
 	}
 	
 	return false;

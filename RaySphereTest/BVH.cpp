@@ -7,6 +7,7 @@
 BVH::BVH(Scene* scene)
 {
 	m_scene = scene;
+	m_nodesAmount = 0;
 	Build();
 }
 
@@ -14,23 +15,25 @@ BVH::BVH(Scene* scene)
 
 void BVH::Build()
 {
-	m_rootNode = new BVHNode;
-
+	m_nodes = new BVHNode[2 * m_scene->m_numberOfSpheres - 1];
+	
 	m_objects.resize(m_scene->m_numberOfSpheres);
 
 	m_objects[0] = &m_scene->m_spheres[0];
-	m_rootNode->m_boundingSphere.m_radius = m_scene->m_spheres[0].m_radius;
-	m_rootNode->m_boundingSphere.m_center = m_scene->m_spheres[0].m_center;
+	m_nodes[0].m_boundingSphere.m_radius = m_scene->m_spheres[0].m_radius;
+	m_nodes[0].m_boundingSphere.m_center = m_scene->m_spheres[0].m_center;
+
+	m_nodesAmount = 1;
 
 	for (int i = 1; i < m_scene->m_numberOfSpheres; i++)
 	{
 		Sphere* sphere = &m_scene->m_spheres[i];
 		m_objects[i] = sphere;
 
-		m_rootNode->m_boundingSphere.Expand(*sphere);
+		m_nodes[0].m_boundingSphere.Expand(*sphere);
 	}
 
-	BuildRecursive(0, m_scene->m_numberOfSpheres-1, m_rootNode, 0);
+	BuildRecursive(0, m_scene->m_numberOfSpheres-1, &m_nodes[0], 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -67,8 +70,13 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 			return;
 		}
 
-		node->m_leftNode  = new BVHNode;
-		node->m_rightNode = new BVHNode;
+		//we are interested in the position of the first child of the node
+		//in the node list, not in the objects list. Each parent node has 2 children,
+		//so we need the position only of the first one
+		node->MakeNode(m_nodesAmount + 1, rightIndex - leftIndex);
+
+		BVHNode* leftNode = &m_nodes[++m_nodesAmount];
+		BVHNode* rightNode = &m_nodes[++m_nodesAmount];
 
 		Sphere leftNodeBoundingSphere = *m_objects[leftIndex];;
 		Sphere rightNodeBoundingSphere = *m_objects[splitIndex];
@@ -83,17 +91,14 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 			rightNodeBoundingSphere.Expand(*m_objects[i]);
 		}
 
-		node->m_leftNode->m_boundingSphere.m_radius  = leftNodeBoundingSphere.m_radius;
-		node->m_leftNode->m_boundingSphere.m_center = leftNodeBoundingSphere.m_center;
+		leftNode->m_boundingSphere.m_radius  = leftNodeBoundingSphere.m_radius;
+		leftNode->m_boundingSphere.m_center = leftNodeBoundingSphere.m_center;
 
-		node->m_rightNode->m_boundingSphere.m_radius = rightNodeBoundingSphere.m_radius;
-		node->m_rightNode->m_boundingSphere.m_center = rightNodeBoundingSphere.m_center;
+		rightNode->m_boundingSphere.m_radius = rightNodeBoundingSphere.m_radius;
+		rightNode->m_boundingSphere.m_center = rightNodeBoundingSphere.m_center;
 
-		node->m_bIsLeaf = false;
-		//node->m_amountOfObjects = amountOfObjects;
-
-		BuildRecursive(leftIndex, splitIndex, node->m_leftNode, depth + 1);
-		BuildRecursive(splitIndex, rightIndex, node->m_rightNode, depth + 1);
+		BuildRecursive(leftIndex, splitIndex, leftNode, depth + 1);
+		BuildRecursive(splitIndex, rightIndex, rightNode, depth + 1);
 	}
 }
 

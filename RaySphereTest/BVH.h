@@ -18,8 +18,8 @@ public:
 
 	static const int maxObjectsInLeaf = 4;
 
-	BVHNode* m_rootNode;
 	std::vector<Sphere*> m_objects;
-
+	int m_nodesAmount;
+	BVHNode* m_nodes;
 	Scene* m_scene;
 };

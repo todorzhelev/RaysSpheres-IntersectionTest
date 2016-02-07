@@ -5,6 +5,7 @@ struct BVHNode
 {
 	BVHNode();
 	void MakeLeaf(int index, int amountOfObjects);
+	void MakeNode(int firstChildIndex, int amountOfObjects);
 
 	//the bounding sphere of the node
 	Sphere m_boundingSphere;
@@ -18,7 +19,6 @@ struct BVHNode
 	//starting index of the node
 	int m_index;
 
-	BVHNode* m_leftNode;
-	BVHNode* m_rightNode;
+	int m_firstChildIndex;
 };
 
