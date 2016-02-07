@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "BVH.h"
 
 //NOTES:
 //if we dont pass Vector3D by const reference we will get "formal parameter with requested alignment of 16 won't be aligned"
@@ -15,6 +16,8 @@ int main()
 
 	int choice;
 	std::cin >> choice;
+
+	BVH bvh(&scene);
 
 	scene.CheckForIntersections((bool) choice);
 

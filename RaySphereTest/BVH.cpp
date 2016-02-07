@@ -1,56 +1,99 @@
 #include "BVH.h"
+#include<algorithm>
 
+////////////////////////////////////////////////////////////////////////////////////////////
 
-int BVH::CalculateSplitIndex()
+BVH::BVH(Scene* scene)
 {
-	return 42;
+	m_scene = scene;
+	Build();
 }
 
-void BVH::Build(const std::vector<Sphere*>& spheres)
+////////////////////////////////////////////////////////////////////////////////////////////
+
+void BVH::Build()
 {
-		//•Create new vector for the nodes ??
+	m_rootNode = new BVHNode;
 
-		std::vector<Sphere*> objects;
+	for (int i = 0; i < m_scene->m_numberOfSpheres; i++)
+	{
+		Sphere* sphere = &m_scene->m_spheres[i];
 
-		std::vector<BVHNode*> nodes; //??
+		m_objects.push_back(sphere);
 
-		BVHNode* rootNode = new BVHNode;
-		Sphere boundingSphere;
+		m_rootNode->m_boundingSphere.Expand(*m_objects[i]);
+	}
 
-		for (auto& sphere : spheres)
-		{
-			objects.push_back(sphere);
-			boundingSphere.Expand(*sphere);
-		}
-
-		rootNode->m_boundingSphere = boundingSphere;
-
-		BuildRecursive(0, objects.size(), rootNode, 0);
+	BuildRecursive(0, m_scene->m_numberOfSpheres-1, m_rootNode, 0);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
 
 void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth)
 {
-	int amount = rightIndex - leftIndex;
+	int amountOfObjects = rightIndex - leftIndex + 1;
 
-	if (amount <= 4)
+	if (amountOfObjects <= BVH::maxObjectsInLeaf)
 	{
-		node->MakeLeaf(leftIndex, amount);
+		node->m_bIsLeaf = true;
 	}
 	else
 	{
-		int splitIndex = CalculateSplitIndex();
+		//sort the spheres in the range [leftIndex,rightIndex] by x coordinate
+		std::sort(m_objects.begin() + leftIndex, m_objects.begin() + rightIndex, [](Sphere* sphere1, Sphere* sphere2)
+		{
+			int sortDimension = 1; //1 - x, 2 - y, 3 - z
+			return sphere1->m_center.m_reg128.m128_f32[sortDimension] < sphere2->m_center.m_reg128.m128_f32[sortDimension];
+		});
 
-		BVHNode* leftNode = new BVHNode;
-		BVHNode* rightNode = new BVHNode;
-		Sphere leftBoundingSphere;
-		Sphere rightBoundingSphere;
+		int splitIndex = CalculateSplitIndex(leftIndex,rightIndex);
 
-		leftNode->m_boundingSphere = leftBoundingSphere;
-		rightNode->m_boundingSphere = rightBoundingSphere;
+		node->m_leftNode  = new BVHNode;
+		node->m_rightNode = new BVHNode;
 
-		node->MakeNode(leftNode, rightNode);
+		Sphere leftNodeBoundingSphere;
+		Sphere rightNodeBoundingSphere;
 
-		BuildRecursive(leftIndex, splitIndex, leftNode, depth + 1);
-		BuildRecursive(splitIndex, rightIndex, rightNode, depth + 1);
+		for (int i = leftIndex; i < splitIndex; i++)
+		{
+			leftNodeBoundingSphere.Expand(*m_objects[i]);
+		}
+
+		for (int i = splitIndex; i <= rightIndex; i++)
+		{
+			rightNodeBoundingSphere.Expand(*m_objects[i]);
+		}
+
+		node->m_leftNode->m_boundingSphere  = leftNodeBoundingSphere;
+		node->m_rightNode->m_boundingSphere = rightNodeBoundingSphere;
+
+		node->m_bIsLeaf = false;
+		//node->m_amountOfObjects = amountOfObjects;
+
+		BuildRecursive(leftIndex, splitIndex, node->m_leftNode, depth + 1);
+		BuildRecursive(splitIndex, rightIndex, node->m_rightNode, depth + 1);
 	}
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+int BVH::CalculateSplitIndex(int leftIndex, int rightIndex)
+{
+	float sphere1CenterX = m_objects[leftIndex]->m_center.m_reg128.m128_f32[1];
+	float sphere2CenterX = m_objects[rightIndex]->m_center.m_reg128.m128_f32[1];
+
+	float splitValue = (sphere1CenterX + sphere2CenterX) / 2.0f;
+
+	int splitIndex = leftIndex;
+	for (int i = leftIndex; i <= rightIndex; i++)
+	{
+		if( m_objects[i]->m_center.m_reg128.m128_f32[1] > splitValue)
+		{
+			splitIndex = i;
+			break;
+		}
+	}
+	return splitIndex;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////
