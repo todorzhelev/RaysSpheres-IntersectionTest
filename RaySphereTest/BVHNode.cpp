@@ -4,24 +4,24 @@
 
 BVHNode::BVHNode()
 {
-	m_bIsLeaf = true;
+	m_bIsLeaf = false;
 	m_amountOfObjectsInNode = 0;
 }
 
 /////////////////////////////////////////////////////////
 
-void BVHNode::MakeLeaf(int index, int amountOfObjects)
+void BVHNode::MakeLeaf(int indexInObjectList, int amountOfObjects)
 {
 	m_bIsLeaf = true;
-	m_index = index;
+	m_indexInObjectList = indexInObjectList;
 	m_amountOfObjectsInNode = amountOfObjects;
 }
 
 /////////////////////////////////////////////////////////
 
-void BVHNode::MakeNode(int firstChildIndex, int amountOfObjects)
+void BVHNode::MakeNode(int firstChildIndexInNodeList, int amountOfObjects)
 {
-	m_firstChildIndex = firstChildIndex;
+	m_firstChildIndexInNodeList = firstChildIndexInNodeList;
 	m_bIsLeaf = false;
 	m_amountOfObjectsInNode = amountOfObjects;
 }

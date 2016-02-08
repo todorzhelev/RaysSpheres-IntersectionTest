@@ -74,10 +74,14 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 		//we are interested in the position of the first child of the node
 		//in the node list, not in the objects list. Each parent node has 2 children,
 		//so we need the position only of the first one
-		node->MakeNode(m_nodesAmount + 1, rightIndex - leftIndex);
+		node->MakeNode(m_nodesAmount, rightIndex - leftIndex);
 
-		BVHNode* leftNode = &m_nodes[++m_nodesAmount];
-		BVHNode* rightNode = &m_nodes[++m_nodesAmount];
+		BVHNode* leftNode = &m_nodes[m_nodesAmount];
+		leftNode->m_indexInNodeList = m_nodesAmount;
+		++m_nodesAmount;
+		BVHNode* rightNode = &m_nodes[m_nodesAmount];
+		rightNode->m_indexInNodeList = m_nodesAmount;
+		++m_nodesAmount;
 
 		Sphere leftNodeBoundingSphere = *m_objects[leftIndex];;
 		Sphere rightNodeBoundingSphere = *m_objects[splitIndex];
@@ -92,11 +96,8 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 			rightNodeBoundingSphere.Expand(*m_objects[i]);
 		}
 
-		leftNode->m_boundingSphere.m_radius  = leftNodeBoundingSphere.m_radius;
-		leftNode->m_boundingSphere.m_center = leftNodeBoundingSphere.m_center;
-
-		rightNode->m_boundingSphere.m_radius = rightNodeBoundingSphere.m_radius;
-		rightNode->m_boundingSphere.m_center = rightNodeBoundingSphere.m_center;
+		leftNode->m_boundingSphere = leftNodeBoundingSphere;
+		rightNode->m_boundingSphere = rightNodeBoundingSphere;
 
 		BuildRecursive(leftIndex, splitIndex, leftNode, depth + 1);
 		BuildRecursive(splitIndex, rightIndex, rightNode, depth + 1);

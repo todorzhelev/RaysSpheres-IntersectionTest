@@ -22,7 +22,7 @@ void Scene::GenerateObjects()
 
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
-		Vector3D pos = GetRG()->GetRandomPosition(0, 10000);
+		Vector3D pos = GetRG()->GetRandomPosition(0, 1000);
 		Vector3D dir = GetRG()->GetRandomPosition(0, 100);
 
 		m_rays[i] = Ray(pos, dir);
@@ -30,7 +30,7 @@ void Scene::GenerateObjects()
 
 	for (int i = 0; i < m_numberOfSpheres; i++)
 	{
-		Vector3D pos = GetRG()->GetRandomPosition(0, 10000);
+		Vector3D pos = GetRG()->GetRandomPosition(0, 1000);
 		float radius = GetRG()->GetRandomFloat(0, 10);
 
 		m_spheres[i] = Sphere(pos, radius);
@@ -120,7 +120,7 @@ bool Scene::RayBVHTest(Ray* ray, BVH* bvh, BVHNode* node, std::vector<Intersecti
 		if (node->m_bIsLeaf)
 		{
 			isLeaf = true;
-			for (int i = node->m_index; i < node->m_index + node->m_amountOfObjectsInNode; i++)
+			for (int i = node->m_indexInObjectList; i < node->m_indexInObjectList + node->m_amountOfObjectsInNode; i++)
 			{
 				IntersectionInfo info;
 				bool bIntersect = bvh->m_objects[i]->GetIntersection(ray, info);
@@ -149,10 +149,10 @@ bool Scene::RayBVHTest(Ray* ray, BVH* bvh, BVHNode* node, std::vector<Intersecti
 			if (bIntersect)
 			{
 				//left node
-				bIntersectsFromLeftTree = RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex], intersectInfo);
+				bIntersectsFromLeftTree = RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndexInNodeList], intersectInfo);
 
 				//right node
-				bIntersectsFromRightTree = RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndex + 1], intersectInfo);
+				bIntersectsFromRightTree = RayBVHTest(ray, bvh, &bvh->m_nodes[node->m_firstChildIndexInNodeList + 1], intersectInfo);
 
 				return bIntersectsFromLeftTree || bIntersectsFromRightTree;
 			}
