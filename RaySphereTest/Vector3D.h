@@ -3,6 +3,8 @@
 #include<iostream>
 #include<xmmintrin.h>
 
+//#define INTRINSICS
+
 struct Vector3D
 {
 	Vector3D();
@@ -25,20 +27,29 @@ struct Vector3D
 
 	void Normalize();
 
+	float GetX();
+
+	float GetY();
+
+	float GetZ();
+
 	//not needed for now
 	//float Distance(const Vector3D& vec) const;
 
 	friend std::ostream& operator<<(std::ostream& stream, const Vector3D& vec);
 	friend Vector3D operator*(float scalar, const Vector3D& vec);
 
+#ifdef INTRINSICS
 	//explicitly align at 16 bytes.
 	union __declspec(align(16))
 	{
 		__m128 m_reg128;
 		float values[4];
 	};
+#else
+	float x, y, z;
+#endif
 
-	//float x, y, z;
 };
 
 float DotProduct(const Vector3D& vec1, const Vector3D& vec2);

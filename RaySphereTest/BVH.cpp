@@ -3,7 +3,6 @@
 #include "Scene.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
-int dimensionSplit = 1; //1 - x, 2 - y, 3 - z
 
 BVH::BVH(Scene* scene)
 {
@@ -53,7 +52,7 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 		std::sort(m_objects.begin() + leftIndex, m_objects.begin() + rightIndex, [](Sphere* sphere1, Sphere* sphere2)
 		{
 			
-			return sphere1->m_center.m_reg128.m128_f32[dimensionSplit] < sphere2->m_center.m_reg128.m128_f32[dimensionSplit];
+			return sphere1->m_center.GetX() < sphere2->m_center.GetX();
 		});
 
 		int splitIndex = CalculateSplitIndex(leftIndex,rightIndex);
@@ -108,15 +107,15 @@ void BVH::BuildRecursive(int leftIndex, int rightIndex, BVHNode* node, int depth
 
 int BVH::CalculateSplitIndex(int leftIndex, int rightIndex)
 {
-	float sphere1CenterX = m_objects[leftIndex]->m_center.m_reg128.m128_f32[dimensionSplit];
-	float sphere2CenterX = m_objects[rightIndex]->m_center.m_reg128.m128_f32[dimensionSplit];
+	float sphere1CenterX = m_objects[leftIndex]->m_center.GetX();
+	float sphere2CenterX = m_objects[rightIndex]->m_center.GetX();
 
 	float splitValue = (sphere1CenterX + sphere2CenterX) / 2.0f;
 
 	int splitIndex = leftIndex;
 	for (int i = leftIndex; i <= rightIndex; i++)
 	{
-		if( m_objects[i]->m_center.m_reg128.m128_f32[dimensionSplit] > splitValue)
+		if( m_objects[i]->m_center.GetX() > splitValue)
 		{
 			splitIndex = i;
 			break;

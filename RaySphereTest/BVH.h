@@ -16,7 +16,7 @@ public:
 
 	int BVH::CalculateSplitIndex(int leftIndex, int rightIndex);
 
-	static const int maxObjectsInLeaf = 4;
+	static const int maxObjectsInLeaf = 30;
 
 	std::vector<Sphere*> m_objects;
 	int m_nodesAmount;
