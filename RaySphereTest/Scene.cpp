@@ -1,6 +1,6 @@
 #include "Scene.h"
 #include <fstream>
-
+#include <mutex>
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 Scene::Scene(Timer* timer)
@@ -58,6 +58,10 @@ void Scene::CheckForIntersections(BVH* bvh)
 
 	m_timer->Start();
 
+#ifdef MULTITHREADED
+	std::mutex mtx;
+	#pragma omp parallel for
+#endif
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
 		for (int j = 0; j < m_numberOfSpheres; j++)
@@ -70,11 +74,19 @@ void Scene::CheckForIntersections(BVH* bvh)
 
 			if (intersect)
 			{
+#ifdef PRINTOUTPUT
+#ifdef MULTITHREADED
+				mtx.lock();
+#endif
 				stream << intersectionsAmount << ": Ray " << i << " start:" << m_rays[i].m_startPos << " dir:" << m_rays[i].m_direction;
 				stream << "Sphere " << j << " c:" << m_spheres[j].m_center << " rad:" << m_spheres[j].m_radius;
-				stream << " Inters. point:" << info.m_intersPoint << std::endl;
+				stream << " Inters. point:" << info.m_intersPoint << "\n";
 
 				intersectionsAmount++;
+#ifdef MULTITHREADED
+				mtx.unlock();
+#endif
+#endif
 			}
 		}
 	}
@@ -85,6 +97,9 @@ void Scene::CheckForIntersections(BVH* bvh)
 
 	m_timer->Start();
 
+#ifdef MULTITHREADED
+	#pragma omp parallel for
+#endif
 	for (int i = 0; i < m_numberOfRays; i++)
 	{
 		std::vector<IntersectionInfo> intersInfo;
@@ -93,12 +108,22 @@ void Scene::CheckForIntersections(BVH* bvh)
 
 		if (bIntersect)
 		{
+#ifdef PRINTOUTPUT
 			for (auto& it : intersInfo)
 			{
+
+#ifdef MULTITHREADED
+				mtx.lock();
+#endif
 				stream1 << intersectionsAmount << ": Ray " << i << " start:" << m_rays[i].m_startPos << " dir:" << m_rays[i].m_direction;
 				stream1 << "Sphere " << " c:" << it.m_object->m_center << " rad:" << it.m_object->m_radius;
 				stream1 << " Inters. point:" << it.m_intersPoint << std::endl;
+#ifdef MULTITHREADED
+				mtx.unlock();
+#endif
+
 			}
+#endif
 		}
 	}
 

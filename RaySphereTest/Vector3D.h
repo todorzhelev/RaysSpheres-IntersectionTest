@@ -2,8 +2,7 @@
 #include<math.h>
 #include<iostream>
 #include<xmmintrin.h>
-
-//#define INTRINSICS
+#include "Defines.h"
 
 struct Vector3D
 {
