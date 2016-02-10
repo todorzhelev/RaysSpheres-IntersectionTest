@@ -1,11 +1,17 @@
 #pragma once
 #include<vector>
 #include<iostream>
-#include"Ray.h"
-#include"Sphere.h"
-#include"RandomGenerator.h"
-#include "BVH.h"
-#include "Timer.h"
+#include"IntersectionInfo.h"
+
+//////////////////////////////////////////////////////
+
+class Timer;
+class Ray;
+class Sphere;
+class BVH;
+class BVHNode;
+
+//////////////////////////////////////////////////////
 
 class Scene
 {
@@ -18,8 +24,9 @@ public:
 	int m_numberOfRays;
 	int m_numberOfSpheres;
 
-	BVH* m_bvh;
 	Ray* m_rays;
 	Sphere* m_spheres;
 	Timer* m_timer;
 };
+
+//////////////////////////////////////////////////////

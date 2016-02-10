@@ -1,6 +1,7 @@
 #include "BVH.h"
 #include<algorithm>
-#include "Scene.h"
+#include"Scene.h"
+#include"BVHNode.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -20,8 +21,7 @@ void BVH::Build()
 	m_objects.resize(m_scene->m_numberOfSpheres);
 
 	m_objects[0] = &m_scene->m_spheres[0];
-	m_nodes[0].m_boundingSphere.m_radius = m_scene->m_spheres[0].m_radius;
-	m_nodes[0].m_boundingSphere.m_center = m_scene->m_spheres[0].m_center;
+	m_nodes[0].m_boundingSphere = m_scene->m_spheres[0];
 
 	m_nodesAmount = 1;
 

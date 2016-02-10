@@ -1,8 +1,9 @@
 #pragma once
 #include<vector>
-#include "BVHNode.h"
 
 class Scene;
+class BVHNode;
+class Sphere;
 
 class BVH
 {

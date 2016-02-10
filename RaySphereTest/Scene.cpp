@@ -1,6 +1,13 @@
-#include "Scene.h"
-#include <fstream>
-#include <mutex>
+#include"Scene.h"
+#include<fstream>
+#include<mutex>
+#include"Ray.h"
+#include"Sphere.h"
+#include"RandomGenerator.h"
+#include"BVH.h"
+#include"Timer.h"
+#include"BVHNode.h"
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 Scene::Scene(Timer* timer)

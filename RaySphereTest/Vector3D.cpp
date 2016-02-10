@@ -5,7 +5,7 @@
 Vector3D::Vector3D()
 {
 #ifdef INTRINSICS
-	m_reg128 = _mm_set_ps(0, 0, 0, 0);
+	reg.m_reg128 = _mm_set_ps(0, 0, 0, 0);
 #else
 	x = y = z = 0;
 #endif
@@ -17,7 +17,7 @@ Vector3D::Vector3D(float _x, float _y, float _z, float _w)
 {
 #ifdef INTRINSICS
 	//it should be in this order z,y,x,w
-	m_reg128 = _mm_set_ps(_z,_y,_x,_w);
+	reg.m_reg128 = _mm_set_ps(_z,_y,_x,_w);
 #else
 	x = _x;
 	y = _y;
@@ -31,7 +31,7 @@ Vector3D Vector3D::operator - (const Vector3D& other) const
 {
 	Vector3D temp;
 #ifdef INTRINSICS
-	temp.m_reg128 = _mm_sub_ps(m_reg128, other.m_reg128);
+	temp.reg.m_reg128 = _mm_sub_ps(reg.m_reg128, other.reg.m_reg128);
 #else
 	temp.x = x - other.x;
 	temp.y = y - other.y;
@@ -45,9 +45,9 @@ Vector3D Vector3D::operator - (const Vector3D& other) const
 Vector3D Vector3D::operator += (const Vector3D& other)
 {
 #ifdef INTRINSICS
-	__m128 temp = _mm_sub_ps(m_reg128, other.m_reg128);
+	__m128 temp = _mm_sub_ps(reg.m_reg128, other.reg.m_reg128);
 
-	m_reg128 = temp;
+	reg.m_reg128 = temp;
 #else
 	x += other.x;
 	y += other.y;
@@ -62,7 +62,7 @@ Vector3D Vector3D::operator + (const Vector3D& other) const
 {
 	Vector3D temp;
 #ifdef INTRINSICS
-	temp.m_reg128 = _mm_add_ps(m_reg128, other.m_reg128);
+	temp.reg.m_reg128 = _mm_add_ps(reg.m_reg128, other.reg.m_reg128);
 #else
 	temp.x = x + other.x;
 	temp.y = y + other.y;
@@ -77,7 +77,7 @@ Vector3D Vector3D::operator*(float scalar) const
 {
 	Vector3D temp;
 #ifdef INTRINSICS
-	temp.m_reg128 = _mm_mul_ps(m_reg128, _mm_set_ps(scalar, scalar, scalar, scalar));
+	temp.reg.m_reg128 = _mm_mul_ps(reg.m_reg128, _mm_set_ps(scalar, scalar, scalar, scalar));
 #else
 	temp.x = x * scalar;
 	temp.y = y * scalar;
@@ -92,7 +92,7 @@ Vector3D Vector3D::operator / (float scalar) const
 {
 	Vector3D temp;
 #ifdef INTRINSICS
-	temp.m_reg128 = _mm_div_ps(m_reg128, _mm_set_ps(scalar, scalar, scalar, scalar));
+	temp.reg.m_reg128 = _mm_div_ps(reg.m_reg128, _mm_set_ps(scalar, scalar, scalar, scalar));
 #else
 	temp.x = x / scalar;
 	temp.y = y / scalar;
@@ -107,7 +107,7 @@ Vector3D operator*(float scalar, const Vector3D& vec)
 {
 	Vector3D temp;
 #ifdef INTRINSICS
-	temp.m_reg128 = _mm_mul_ps(vec.m_reg128, _mm_set_ps(scalar, scalar, scalar, scalar));
+	temp.reg.m_reg128 = _mm_mul_ps(vec.reg.m_reg128, _mm_set_ps(scalar, scalar, scalar, scalar));
 #else
 	temp.x = vec.x * scalar;
 	temp.y = vec.y * scalar;
@@ -122,7 +122,7 @@ float DotProduct(const Vector3D& vec1, const Vector3D& vec2)
 {
 	float result;
 #ifdef INTRINSICS
-	__m128 r1 = _mm_mul_ps(vec1.m_reg128, vec2.m_reg128);
+	__m128 r1 = _mm_mul_ps(vec1.reg.m_reg128, vec2.reg.m_reg128);
 
 	//horizontal add - (0,3,35,16)+(0,3,35,16) = (3,51,3,51)
 	__m128 r2 = _mm_hadd_ps(r1, r1);
@@ -144,7 +144,7 @@ std::ostream& operator<<(std::ostream& stream, const Vector3D& vec)
 	stream.precision(3);
 
 #ifdef INTRINSICS
-	stream << std::fixed << "(" << vec.m_reg128.m128_f32[1] << "," << vec.m_reg128.m128_f32[2] << "," << vec.m_reg128.m128_f32[3] << ")";
+	stream << std::fixed << "(" << vec.reg.m_reg128.m128_f32[1] << "," << vec.reg.m_reg128.m128_f32[2] << "," << vec.reg.m_reg128.m128_f32[3] << ")";
 #else
 	stream << std::fixed << "(" << vec.x << "," << vec.y << "," << vec.z << ")";
 #endif
@@ -157,7 +157,7 @@ float Vector3D::LengthSqr() const
 {
 	float length;
 #ifdef INTRINSICS
-	__m128 temp = _mm_mul_ps(m_reg128, m_reg128);
+	__m128 temp = _mm_mul_ps(reg.m_reg128, reg.m_reg128);
 
 	__m128 r2 = _mm_hadd_ps(temp, temp);
 	__m128 r3 = _mm_hadd_ps(r2, r2);
@@ -175,7 +175,7 @@ float Vector3D::Length() const
 {
 	float length;
 #ifdef INTRINSICS
-	__m128 temp = _mm_mul_ps(m_reg128, m_reg128);
+	__m128 temp = _mm_mul_ps(reg.m_reg128, reg.m_reg128);
 
 	__m128 r2 = _mm_hadd_ps(temp, temp);
 	__m128 r3 = _mm_hadd_ps(r2, r2);
@@ -196,7 +196,7 @@ void Vector3D::Normalize()
 {
 	float length = Length();
 #ifdef INTRINSICS
-	m_reg128 = _mm_div_ps(m_reg128, _mm_set_ps(length, length, length, length));
+	reg.m_reg128 = _mm_div_ps(reg.m_reg128, _mm_set_ps(length, length, length, length));
 #else
 	x /= length;
 	y /= length;
@@ -209,7 +209,7 @@ void Vector3D::Normalize()
 float Vector3D::GetX()
 {
 #ifdef INTRINSICS
-	return m_reg128.m128_f32[1];
+	return reg.m_reg128.m128_f32[1];
 #else
 	return x;
 #endif
@@ -218,7 +218,7 @@ float Vector3D::GetX()
 float Vector3D::GetY()
 {
 #ifdef INTRINSICS
-	return m_reg128.m128_f32[2];
+	return reg.m_reg128.m128_f32[2];
 #else
 	return y;
 #endif
@@ -227,7 +227,7 @@ float Vector3D::GetY()
 float Vector3D::GetZ()
 {
 #ifdef INTRINSICS
-	return m_reg128.m128_f32[3];
+	return reg.m_reg128.m128_f32[3];
 #else
 	return z;
 #endif

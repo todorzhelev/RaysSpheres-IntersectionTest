@@ -11,8 +11,6 @@ struct Sphere : public Object
 
 	virtual bool GetIntersection(Ray* ray, IntersectionInfo& info) override;
 
-	//virtual Sphere GetBoundingSphere() override;
-
 	float m_radius;
 	Vector3D m_center;
 };

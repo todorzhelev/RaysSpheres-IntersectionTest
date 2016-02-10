@@ -4,6 +4,8 @@
 #include<xmmintrin.h>
 #include "Defines.h"
 
+/////////////////////////////////////////////////////////////////
+
 struct Vector3D
 {
 	Vector3D();
@@ -40,11 +42,12 @@ struct Vector3D
 
 #ifdef INTRINSICS
 	//explicitly align at 16 bytes.
-	union __declspec(align(16))
+	//union __declspec(align(16))
+	union m128
 	{
 		__m128 m_reg128;
 		float values[4];
-	};
+	} reg;
 #else
 	float x, y, z;
 #endif
